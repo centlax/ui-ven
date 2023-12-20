@@ -1,0 +1,52 @@
+<template>
+  <ul v-if="links?.length" :class="ui.wrapper" v-bind="attrs">
+    <li v-for="(link, index) of links" :key="index" class="relative">
+      <ULink
+        v-bind="omit(link, ['label', 'icon'])"
+        :class="ui.base"
+        :active-class="ui.active"
+        :inactive-class="ui.inactive"
+        @click="link.click"
+      >
+        {{ link.label }}
+
+        <UIcon v-if="link.target === '_blank'" :name="ui.externalIcon.name" :class="ui.externalIcon.base" />
+      </ULink>
+    </li>
+  </ul>
+</template>
+
+<script setup lang="ts">
+import type { Link } from '#ui-pro/types'
+import { omit } from '../../lib/lodash'
+
+const appConfig = useAppConfig()
+
+const config = computed(() => ({
+  wrapper: 'flex flex-col md:flex-row items-center justify-center gap-4 lg:gap-6',
+  base: 'text-sm',
+  active: 'text-gray-900 dark:text-white font-medium',
+  inactive: 'text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300',
+  externalIcon: {
+    name: appConfig.ui.icons.external,
+    base: 'w-3 h-3 absolute top-0.5 -right-3.5 text-gray-400 dark:text-gray-500'
+  }
+}))
+
+defineOptions({
+  inheritAttrs: false
+})
+
+const props = withDefaults(defineProps<{
+  links?: Link[]
+  ui?: Partial<typeof config.value>
+  class?: any
+}>(), {
+  level: 0,
+  links: () => [],
+  ui: () => ({}),
+  class: undefined
+})
+
+const { ui, attrs } = useUI('footer.links', toRef(props, 'ui'), config, toRef(props, 'class'), true)
+</script>

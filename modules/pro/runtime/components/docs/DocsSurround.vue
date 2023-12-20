@@ -1,0 +1,45 @@
+<template>
+  <div :class="ui.wrapper" v-bind="attrs">
+    <UDocsSurroundLink
+      v-if="prev"
+      :link="prev"
+      :ui="ui.link"
+      :icon="ui.icon.prev"
+    />
+    <span v-else class="hidden sm:block">&nbsp;</span>
+    <UDocsSurroundLink
+      v-if="next"
+      :link="next"
+      :ui="ui.link"
+      :icon="ui.icon.next"
+      class="text-right"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { ParsedContent } from '@nuxt/content/dist/runtime/types'
+
+const config = {
+  wrapper: 'grid gap-8 sm:grid-cols-2',
+  icon: {
+    prev: 'i-heroicons-arrow-left-20-solid',
+    next: 'i-heroicons-arrow-right-20-solid'
+  },
+  link: {}
+}
+
+defineOptions({
+  inheritAttrs: false
+})
+
+const props = defineProps<{
+  surround?: Pick<ParsedContent, string>[]
+  ui?: Partial<typeof config>
+  class?: any
+}>()
+
+const { ui, attrs } = useUI('docs.surround', toRef(props, 'ui'), config, toRef(props, 'class'), true)
+
+const [prev, next] = props.surround || []
+</script>
